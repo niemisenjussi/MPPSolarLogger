@@ -185,11 +185,11 @@ def update_mode(global_mode, inverter_mode, night_shift, battery_volts, pv_power
     
     
     rules = [
-        {'hours': (22, 23, 24, 0, 1, 2, 3, 4, 5, 6), 'inverter_mode': ['Line', 'Battery'], 'bat_min': 0.0, 'bat_max': 54.0, 
+        {'hours': (22, 23, 24, 0, 1, 2, 3, 4, 5, 6), 'inverter_mode': ['Line', 'Battery'], 'bat_min': 0.0, 'bat_max': 48.5,
          'name': 'night_charge_heater', 'parent': ["solar_power", "disable_heater"],
          'desc':"Activating night charge + heater mode"},
         
-        {'hours': (22, 23, 24, 0, 1, 2, 3, 4, 5, 6), 'inverter_mode': ['Line'], 'bat_min': 52.0, 'bat_max': 60.0,
+        {'hours': (22, 23, 24, 0, 1, 2, 3, 4, 5, 6), 'inverter_mode': ['Line'], 'bat_min': 58.3, 'bat_max': 60.0,
          'name': 'night_heater', 'parent': ["night_charge_heater"],
          'desc': "Disabling utility charger"}, 
         
@@ -219,7 +219,7 @@ def update_mode(global_mode, inverter_mode, night_shift, battery_volts, pv_power
         ]
     
     modes = {
-        'night_charge_heater': {'temp': 45, 'heater': True, 'commands': ["PCP00", "POP00"]},
+        'night_charge_heater': {'temp': 55, 'heater': True, 'commands': ["PCP00", "POP00"]},
         'night_heater': {'temp': None, 'heater': True, 'commands': ["PCP03"]},
         'solar_init': {'temp': None, 'heater': False, 'commands': ["PCP03", "POP02"]},
         'solar_heater': {'temp': 55, 'heater': True, 'commands': ["PCP03", "POP02"]},
@@ -305,7 +305,7 @@ def get_heated_hours(con, deltaday):
 if __name__ == '__main__':
     print("Start")
     setproctitle.setproctitle('mppcollector')
-
+ 
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(HEATER_PIN_1, GPIO.OUT)
     GPIO.setup(HEATER_PIN_2, GPIO.OUT)
@@ -315,6 +315,8 @@ if __name__ == '__main__':
     GPIO.output(HEATER_PIN_3, 0) # Deactivated
     
     inverter = mppUtils(serial_device="/dev/hidraw0")
+    
+    #run_commands(["PCP00", "POP00"])
     
     conn = connect_db()
 
@@ -338,21 +340,25 @@ if __name__ == '__main__':
 
     print("Init to solar_power and 55 degrees without heater")
     night_shift = False
-    global_mode = "solar_power"
+    global_mode = "solar_init" 
+    # run_commands(["PCP00", "POP00"]) #Pakotettu lataus startista
+    
+    
     run_commands(["PCP03", "POP02"])
     deactivate_heater()
     set_temp(55)
 
-    record_mode_change(conn,
-                       get_inverter_mode(),
-                       "start",
-                       "solar_power",
-                       0,
-                       0,
-                       55,
-                       False,
-                       "PCP03, POP02",
-                       "Init")
+    # record_mode_change(conn,
+                       # get_inverter_mode(),
+                       # "start",
+                       # "solar_power",
+                       # 0,
+                       # 0,
+                       # 55,
+                       # False,
+                       # # "PCP00, POP00", # Pakotettu lataus
+                       # "PCP03, POP02", # # Palauta PCP03 ja POP02
+                       # "Init")
     
     #print(now.year, now.month, now.day, now.hour, now.minute, now.second)
     last_update = 0
