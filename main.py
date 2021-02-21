@@ -185,11 +185,11 @@ def update_mode(global_mode, inverter_mode, night_shift, battery_volts, pv_power
     
     
     rules = [
-        {'hours': (22, 23, 24, 0, 1, 2, 3, 4, 5, 6), 'inverter_mode': ['Line', 'Battery'], 'bat_min': 0.0, 'bat_max': 48.5,
+        {'hours': (22, 23, 24, 0, 1, 2, 3, 4, 5, 6), 'inverter_mode': ['Line', 'Battery'], 'bat_min': 0.0, 'bat_max': 51.0,
          'name': 'night_charge_heater', 'parent': ["solar_power", "disable_heater"],
          'desc':"Activating night charge + heater mode"},
         
-        {'hours': (22, 23, 24, 0, 1, 2, 3, 4, 5, 6), 'inverter_mode': ['Line'], 'bat_min': 58.3, 'bat_max': 60.0,
+        {'hours': (22, 23, 24, 0, 1, 2, 3, 4, 5, 6), 'inverter_mode': ['Line'], 'bat_min': 53.2, 'bat_max': 60.0, # was 58.3 => 4.16v/cell
          'name': 'night_heater', 'parent': ["night_charge_heater"],
          'desc': "Disabling utility charger"}, 
         
